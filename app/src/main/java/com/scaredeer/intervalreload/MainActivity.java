@@ -1,20 +1,18 @@
 package com.scaredeer.intervalreload;
 
+import android.os.Bundle;
+import android.os.Handler;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProvider;
 
-import android.os.Bundle;
-
 import com.scaredeer.intervalreload.databinding.MainActivityBinding;
-
-import java.util.Objects;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity {
     private MainViewModel mViewModel;
-    private Timer mTimer;
+    private Handler mHandler;
+    private Runnable mRunnable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +30,12 @@ public class MainActivity extends AppCompatActivity {
                 startTimer();
             }
         });
+
+        mHandler = new Handler();
+        mRunnable = () -> {
+            mViewModel.postRefresh();
+            mHandler.postDelayed(mRunnable, 1000L);
+        };
     }
 
     @Override
@@ -56,13 +60,7 @@ public class MainActivity extends AppCompatActivity {
         stopTimer(); // スレッドの多重起動を防ぐため、
         // 既存のタイマーがあったとしたらちゃんと終了してから以下の処理に臨むようにする
 
-        mTimer = new Timer();
-        mTimer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                mViewModel.postRefresh();
-            }
-        }, 0, 1000L);
+        mHandler.post(mRunnable);
 
         mViewModel.isTimerActive.setValue(true);
     }
@@ -77,8 +75,6 @@ public class MainActivity extends AppCompatActivity {
     // 単なる pause の時は（復帰時にタイマーを再スタートする必要があるので）
     // isTimerActive は false にトグルさせない。
     private void pauseTimer() {
-        if (Objects.nonNull(mTimer)) {
-            mTimer.cancel();
-        }
+        mHandler.removeCallbacks(mRunnable);
     }
 }
