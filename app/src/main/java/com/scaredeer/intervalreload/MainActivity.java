@@ -39,6 +39,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onDestroy() {
+        mRunnable = null;
+        mHandler = null;
+        mViewModel = null;
+        super.onDestroy();
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
 
