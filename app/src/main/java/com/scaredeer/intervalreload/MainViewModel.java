@@ -14,7 +14,13 @@ public class MainViewModel extends ViewModel {
         return mDatetime;
     }
 
-    public final MutableLiveData<Boolean> isTimerActive;
+    private final MutableLiveData<Boolean> isTimerActive;
+    public boolean isTimerActive() {
+        return isTimerActive.getValue();
+    }
+    public void setIsTimerActive(boolean isActive) {
+        isTimerActive.setValue(isActive);
+    }
 
     public MainViewModel() {
         mDatetime = new MutableLiveData<>(currentDatetime());

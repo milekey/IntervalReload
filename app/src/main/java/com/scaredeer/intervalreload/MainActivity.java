@@ -20,18 +20,21 @@ public class MainActivity extends AppCompatActivity {
 
         mViewModel = new ViewModelProvider(this).get(MainViewModel.class);
 
+        // https://developer.android.com/topic/libraries/data-binding/architecture
+        // https://developer.android.com/topic/libraries/data-binding/architecture#livedata
+        // https://developer.android.com/topic/libraries/data-binding/architecture#viewmodel
         MainActivityBinding binding = DataBindingUtil.setContentView(this, R.layout.main_activity);
         binding.setLifecycleOwner(this);
         binding.setViewModel(mViewModel);
         binding.button.setOnClickListener(view -> {
-            if (mViewModel.isTimerActive.getValue()) {
+            if (mViewModel.isTimerActive()) {
                 stopTimer();
             } else {
                 startTimer();
             }
         });
 
-        mHandler = new Handler();
+        mHandler = new Handler(getMainLooper());
         mRunnable = () -> {
             mViewModel.postRefresh();
             mHandler.postDelayed(mRunnable, 1000L);
@@ -50,14 +53,14 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        if (mViewModel.isTimerActive.getValue()) {
+        if (mViewModel.isTimerActive()) {
             startTimer();
         }
     }
 
     @Override
     protected void onPause() {
-        if (mViewModel.isTimerActive.getValue()) {
+        if (mViewModel.isTimerActive()) {
             pauseTimer();
         }
 
@@ -70,14 +73,14 @@ public class MainActivity extends AppCompatActivity {
 
         mHandler.post(mRunnable);
 
-        mViewModel.isTimerActive.setValue(true);
+        mViewModel.setIsTimerActive(true);
     }
 
     // ユーザーの意思でタイマーを停止したので、当然、isTimerActive も false にトグルさせる。
     private void stopTimer() {
         pauseTimer();
 
-        mViewModel.isTimerActive.setValue(false);
+        mViewModel.setIsTimerActive(false);
     }
 
     // 単なる pause の時は（復帰時にタイマーを再スタートする必要があるので）
