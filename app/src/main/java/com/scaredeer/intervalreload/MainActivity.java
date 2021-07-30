@@ -29,8 +29,10 @@ public class MainActivity extends AppCompatActivity {
         binding.button.setOnClickListener(view -> {
             if (mViewModel.isTimerActive()) {
                 stopTimer();
+                binding.button.setText("activate");
             } else {
                 startTimer();
+                binding.button.setText("Inactivate");
             }
         });
 
