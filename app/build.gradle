@@ -4,23 +4,22 @@ plugins {
 
 android {
     compileSdkVersion 31
-    buildToolsVersion '30.0.3'
     defaultConfig {
         applicationId 'com.scaredeer.intervalreload'
         minSdkVersion 26
         targetSdkVersion 31
         versionCode 1
-        versionName '20210730'
-    }
-    compileOptions {
-        sourceCompatibility 1.11
-        targetCompatibility 1.11
+        versionName '20210806'
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
     }
     buildFeatures {
         dataBinding true
