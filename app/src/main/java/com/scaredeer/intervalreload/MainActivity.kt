@@ -1,93 +1,82 @@
-package com.scaredeer.intervalreload;
+package com.scaredeer.intervalreload
 
-import android.os.Bundle;
-import android.os.Handler;
+import android.os.Bundle
+import android.os.Handler
+import androidx.appcompat.app.AppCompatActivity
+import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.ViewModelProvider
+import com.scaredeer.intervalreload.databinding.MainActivityBinding
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.databinding.DataBindingUtil;
-import androidx.lifecycle.ViewModelProvider;
+class MainActivity : AppCompatActivity() {
 
-import com.scaredeer.intervalreload.databinding.MainActivityBinding;
+    private lateinit var viewModel: MainViewModel
+    private lateinit var handler: Handler
+    private lateinit var runnable: Runnable
 
-public class MainActivity extends AppCompatActivity {
-    private MainViewModel mViewModel;
-    private Handler mHandler;
-    private Runnable mRunnable;
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        mViewModel = new ViewModelProvider(this).get(MainViewModel.class);
+        viewModel = ViewModelProvider(this)[MainViewModel::class.java]
 
         // https://developer.android.com/topic/libraries/data-binding/architecture
         // https://developer.android.com/topic/libraries/data-binding/architecture#livedata
         // https://developer.android.com/topic/libraries/data-binding/architecture#viewmodel
-        MainActivityBinding binding = DataBindingUtil.setContentView(this, R.layout.main_activity);
-        binding.setLifecycleOwner(this);
-        binding.setViewModel(mViewModel);
-        binding.button.setOnClickListener(view -> {
-            if (mViewModel.isTimerActive()) {
-                stopTimer();
-                binding.button.setText("activate");
+        val binding =
+            DataBindingUtil.setContentView<MainActivityBinding>(this, R.layout.main_activity)
+        binding.lifecycleOwner = this
+        binding.viewModel = viewModel
+        binding.button.setOnClickListener {
+            if (viewModel.isTimerActive()) {
+                stopTimer()
+                binding.button.text = "activate"
             } else {
-                startTimer();
-                binding.button.setText("Inactivate");
+                startTimer()
+                binding.button.text = "inactivate"
             }
-        });
+        }
 
-        mHandler = new Handler(getMainLooper());
-        mRunnable = () -> {
-            mViewModel.postRefresh();
-            mHandler.postDelayed(mRunnable, 1000L);
-        };
-    }
-
-    @Override
-    protected void onDestroy() {
-        mRunnable = null;
-        mHandler = null;
-        mViewModel = null;
-        super.onDestroy();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        if (mViewModel.isTimerActive()) {
-            startTimer();
+        handler = Handler(mainLooper)
+        runnable = Runnable {
+            viewModel.refresh()
+            handler.postDelayed(runnable, 1000L)
         }
     }
 
-    @Override
-    protected void onPause() {
-        if (mViewModel.isTimerActive()) {
-            pauseTimer();
-        }
+    override fun onResume() {
+        super.onResume()
 
-        super.onPause();
+        if (viewModel.isTimerActive()) {
+            startTimer()
+        }
     }
 
-    private void startTimer() {
-        stopTimer(); // スレッドの多重起動を防ぐため、
+    override fun onPause() {
+        if (viewModel.isTimerActive()) {
+            pauseTimer()
+        }
+
+        super.onPause()
+    }
+
+    private fun startTimer() {
+        stopTimer() // スレッドの多重起動を防ぐため、
         // 既存のタイマーがあったとしたらちゃんと終了してから以下の処理に臨むようにする
 
-        mHandler.post(mRunnable);
+        handler.post(runnable)
 
-        mViewModel.setIsTimerActive(true);
+        viewModel.setIsTimerActive(true)
     }
 
     // ユーザーの意思でタイマーを停止したので、当然、isTimerActive も false にトグルさせる。
-    private void stopTimer() {
-        pauseTimer();
+    private fun stopTimer() {
+        pauseTimer()
 
-        mViewModel.setIsTimerActive(false);
+        viewModel.setIsTimerActive(false)
     }
 
     // 単なる pause の時は（復帰時にタイマーを再スタートする必要があるので）
     // isTimerActive は false にトグルさせない。
-    private void pauseTimer() {
-        mHandler.removeCallbacks(mRunnable);
+    private fun pauseTimer() {
+        handler.removeCallbacks(runnable)
     }
 }

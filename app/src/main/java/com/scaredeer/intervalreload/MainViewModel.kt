@@ -1,39 +1,33 @@
-package com.scaredeer.intervalreload;
+package com.scaredeer.intervalreload
 
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
+class MainViewModel : ViewModel() {
+    private val _datetime: MutableLiveData<String> = MutableLiveData(currentDatetime())
+    val datetime: LiveData<String>
+        get() = _datetime
 
-public class MainViewModel extends ViewModel {
-    private final MutableLiveData<String> mDatetime;
-    public LiveData<String> getDatetime() {
-        return mDatetime;
+    fun refresh() {
+        _datetime.postValue(currentDatetime())
     }
 
-    private final MutableLiveData<Boolean> isTimerActive;
-    public boolean isTimerActive() {
-        return isTimerActive.getValue();
-    }
-    public void setIsTimerActive(boolean isActive) {
-        isTimerActive.setValue(isActive);
+    private val isTimerActive: MutableLiveData<Boolean> = MutableLiveData(false)
+    fun isTimerActive(): Boolean {
+        return isTimerActive.value!!
     }
 
-    public MainViewModel() {
-        mDatetime = new MutableLiveData<>(currentDatetime());
-        isTimerActive = new MutableLiveData<>(false);
+    fun setIsTimerActive(isActive: Boolean) {
+        isTimerActive.value = isActive
     }
 
-    void postRefresh() {
-        mDatetime.postValue(currentDatetime());
-    }
-
-    private String currentDatetime() {
+    private fun currentDatetime(): String {
         return Instant.ofEpochSecond(System.currentTimeMillis() / 1000L)
-                .atZone(ZoneId.of("JST"))
-                .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            .atZone(ZoneId.of("JST"))
+            .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
     }
 }
