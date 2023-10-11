@@ -2,10 +2,13 @@ package com.scaredeer.intervalreload
 
 import android.os.Bundle
 import android.os.Handler
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import com.scaredeer.intervalreload.databinding.MainActivityBinding
+
+private val TAG = MainActivity::class.java.simpleName
 
 class MainActivity : AppCompatActivity() {
 
@@ -15,6 +18,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.v(TAG, "onCreate")
 
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
 
@@ -26,12 +30,10 @@ class MainActivity : AppCompatActivity() {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         binding.button.setOnClickListener {
-            if (viewModel.isTimerActive()) {
+            if (viewModel.isTimerActive.value!!) {
                 stopTimer()
-                binding.button.text = "activate"
             } else {
                 startTimer()
-                binding.button.text = "inactivate"
             }
         }
 
@@ -42,16 +44,23 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onDestroy() {
+        Log.v(TAG, "onDestroy")
+        super.onDestroy()
+    }
+
     override fun onResume() {
         super.onResume()
+        Log.v(TAG, "onResume")
 
-        if (viewModel.isTimerActive()) {
+        if (viewModel.isTimerActive.value!!) {
             startTimer()
         }
     }
 
     override fun onPause() {
-        if (viewModel.isTimerActive()) {
+        Log.v(TAG, "onPause")
+        if (viewModel.isTimerActive.value!!) {
             pauseTimer()
         }
 
@@ -64,18 +73,18 @@ class MainActivity : AppCompatActivity() {
 
         handler.post(runnable)
 
-        viewModel.setIsTimerActive(true)
+        viewModel.startTimer()
     }
 
     // ユーザーの意思でタイマーを停止したので、当然、isTimerActive も false にトグルさせる。
     private fun stopTimer() {
         pauseTimer()
 
-        viewModel.setIsTimerActive(false)
+        viewModel.stopTimer()
     }
 
     // 単なる pause の時は（復帰時にタイマーを再スタートする必要があるので）
-    // isTimerActive は false にトグルさせない。
+    // viewModel.isTimerActive は false にトグルさせない。
     private fun pauseTimer() {
         handler.removeCallbacks(runnable)
     }
