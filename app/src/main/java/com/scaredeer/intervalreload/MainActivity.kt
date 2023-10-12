@@ -26,7 +26,7 @@ class MainActivity : AppCompatActivity() {
         // https://developer.android.com/topic/libraries/data-binding/architecture#viewmodel
         val binding =
             DataBindingUtil.setContentView<MainActivityBinding>(this, R.layout.main_activity)
-        binding.lifecycleOwner = this // LiveData/StateFlow 変化を dataBinding から看視する場合に必要
+        binding.lifecycleOwner = this // LiveData/StateFlow の変化を dataBinding から看視する場合に必要
         binding.viewModel = viewModel
         binding.button.setOnClickListener {
             if (viewModel.isTimerActive.value) {
