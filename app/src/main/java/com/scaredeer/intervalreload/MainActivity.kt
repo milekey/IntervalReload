@@ -3,16 +3,17 @@ package com.scaredeer.intervalreload
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.ViewModelProvider
 import com.scaredeer.intervalreload.databinding.MainActivityBinding
 
 private val TAG = MainActivity::class.java.simpleName
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var viewModel: MainViewModel
+    private val viewModel: MainViewModel by viewModels()
+
     private lateinit var handler: Handler
     private lateinit var runnable: Runnable
 
@@ -20,14 +21,12 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         Log.v(TAG, "onCreate")
 
-        viewModel = ViewModelProvider(this)[MainViewModel::class.java]
-
         // https://developer.android.com/topic/libraries/data-binding/architecture
         // https://developer.android.com/topic/libraries/data-binding/architecture#livedata
         // https://developer.android.com/topic/libraries/data-binding/architecture#viewmodel
         val binding =
             DataBindingUtil.setContentView<MainActivityBinding>(this, R.layout.main_activity)
-        binding.lifecycleOwner = this
+        binding.lifecycleOwner = this // LiveData/StateFlow 変化を dataBinding から看視する場合に必要
         binding.viewModel = viewModel
         binding.button.setOnClickListener {
             if (viewModel.isTimerActive.value) {
