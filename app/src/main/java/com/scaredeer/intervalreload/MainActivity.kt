@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity() {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         binding.button.setOnClickListener {
-            if (viewModel.isTimerActive.value!!) {
+            if (viewModel.isTimerActive.value) {
                 stopTimer()
             } else {
                 startTimer()
@@ -53,14 +53,14 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
         Log.v(TAG, "onResume")
 
-        if (viewModel.isTimerActive.value!!) {
+        if (viewModel.isTimerActive.value) {
             startTimer()
         }
     }
 
     override fun onPause() {
         Log.v(TAG, "onPause")
-        if (viewModel.isTimerActive.value!!) {
+        if (viewModel.isTimerActive.value) {
             pauseTimer()
         }
 
