@@ -36,6 +36,8 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        // もちろん、Kotlin の coroutine と delay を使えば、このように Android OS のタスクキューを使った
+        // Handler.postDelayed を使わずとも、同様のことは実現できる
         handler = Handler(mainLooper)
         runnable = Runnable {
             viewModel.refresh()
