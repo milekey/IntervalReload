@@ -6,14 +6,14 @@ plugins {
 
 android {
     namespace = "com.scaredeer.intervalreload"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.scaredeer.intervalreload"
         minSdk = 26
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
-        versionName = "20250320"
+        versionName = "20250417"
     }
 
     buildTypes {
@@ -26,11 +26,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "11"
     }
 
     buildFeatures {
@@ -44,6 +44,6 @@ dependencies {
     implementation("com.google.android.material:material:1.12.0")
 
     // To use the 'by viewModels()' Kotlin property delegate
-    implementation("androidx.activity:activity-ktx:1.9.3")
+    implementation("androidx.activity:activity-ktx:1.10.1")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.7") // ViewModel
 }
