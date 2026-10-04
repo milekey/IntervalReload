@@ -1,4 +1,4 @@
-package com.scaredeer.templaterabbit.ui.theme
+package com.scaredeer.intervalreload.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

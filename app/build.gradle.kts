@@ -31,8 +31,6 @@ android {
     }
     buildFeatures {
         compose = true
-
-        dataBinding = true
     }
 }
 
@@ -45,8 +43,7 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
-
-    implementation(libs.androidx.appcompat)
 }
